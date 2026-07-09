@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스크린 퍼팅 계산기</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      color: #222;
+    }
+
+    .app {
+      max-width: 420px;
+      margin: 0 auto;
+      background: white;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      text-align: center;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 16px;
+      font-size: 22px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+    }
+
+    .slope-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .slope-buttons button {
+      flex: 1;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #f7f7f7;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .slope-buttons button.active {
+      background: #1b7f3a;
+      color: white;
+      border-color: #1b7f3a;
+    }
+
+    .calculate-btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+      border: none;
+      border-radius: 14px;
+      background: #1b7f3a;
+      color: white;
+      cursor: pointer;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 24px;
+      padding: 22px;
+      border-radius: 16px;
+      background: #eef8f1;
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 16px;
+      color: #555;
+    }
+
+    .result-value {
+      margin-top: 8px;
+      font-size: 44px;
+      font-weight: bold;
+      color: #1b7f3a;
+    }
+
+    .formula {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .notice {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #777;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <h1>퍼팅 계산기</h1>
+    <div class="subtitle">골프존 오르막·내리막 거리 보정</div>
+
+    <label for="distance">남은 거리 m</label>
+    <input id="distance" type="number" step="0.1" placeholder="예: 5.4" />
+
+    <label for="height">높이 m</label>
+    <input id="height" type="number" step="0.1" placeholder="예: 0.2" />
+
+    <label>경사</label>
+    <div class="slope-buttons">
+      <button id="upBtn" class="active" onclick="setSlope('up')">오르막</button>
+      <button id="downBtn" onclick="setSlope('down')">내리막</button>
+    </div>
+
+    <button class="calculate-btn" onclick="calculate()">계산하기</button>
+
+    <div id="resultBox" class="result-box">
+      <div class="result-label">실제 쳐야 할 거리</div>
+      <div id="resultValue" class="result-value">0.0m</div>
+      <div id="formulaText" class="formula"></div>
+    </div>
+
+    <div class="notice">
+      공식<br />
+      오르막 = (남은 거리 + 높이 × 10) × 1.2<br />
+      내리막 = (남은 거리 - 높이 × 10) × 0.9
+    </div>
+  </div>
+
+  <script>
+    let slope = "up";
+
+    function setSlope(type) {
+      slope = type;
+
+      const upBtn = document.getElementById("upBtn");
+      const downBtn = document.getElementById("downBtn");
+
+      if (type === "up") {
+        upBtn.classList.add("active");
+        downBtn.classList.remove("active");
+      } else {
+        downBtn.classList.add("active");
+        upBtn.classList.remove("active");
+      }
+    }
+
+    function calculate() {
+      const distance = parseFloat(document.getElementById("distance").value);
+      const height = parseFloat(document.getElementById("height").value);
+
+      if (isNaN(distance) || isNaN(height)) {
+        alert("남은 거리와 높이를 입력하세요.");
+        return;
+      }
+
+      let result = 0;
+      let formulaText = "";
+
+      if (slope === "up") {
+        result = (distance + height * 10) * 1.2;
+        formulaText = `오르막: (${distance} + ${height} × 10) × 1.2 = ${result.toFixed(1)}m`;
+      } else {
+        result = (distance - height * 10) * 0.9;
+
+        if (result < 0) {
+          result = 0;
+        }
+
+        formulaText = `내리막: (${distance} - ${height} × 10) × 0.9 = ${result.toFixed(1)}m`;
+      }
+
+      document.getElementById("resultValue").innerText = result.toFixed(1) + "m";
+      document.getElementById("formulaText").innerText = formulaText;
+      document.getElementById("resultBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>
